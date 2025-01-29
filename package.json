@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "prettier": "prettier --write ./src",
-    "server": "json-server --watch src/data/db.json --port 3001"
+    "server": "json-server --watch ./data/db.json --port 3001"
   },
   "dependencies": {
     "@tanstack/query-core": "^5.65.0",
