@@ -21,11 +21,11 @@ export const TodoSearch = observer(() => {
       <input
         type="text"
         placeholder="Search todos..."
-        defaultValue={todoService.searchQuery}
+        defaultValue={todoService.searchState.query}
         onChange={(e) => debouncedSearch(e.target.value)}
         className={styles.input}
       />
-      {todoService.searchQuery && (
+      {todoService.searchState.query && (
         <button
           className={styles.clear}
           onClick={() => {

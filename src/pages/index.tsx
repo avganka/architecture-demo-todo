@@ -1,11 +1,14 @@
-import { TodoList } from '@/shared/components/TodoList/TodoList';
+import { CreateTodoButton } from '@/modules/CreateTodoButton/CreateTodoButton';
+import { CreateTodoModal } from '@/modules/CreateTodoModal/CreateTodoModal';
 import { TodoModal } from '@/modules/TodoModal/TodoModal';
 import { TodoSearch } from '@/modules/TodoSearch/TodoSearch';
 import { TodoTabs } from '@/modules/TodoTabs/TodoTabs';
+import { TodoList } from '@/shared/components/TodoList/TodoList';
 import { useRoot } from '@/shared/context/root';
 import { observer } from 'mobx-react-lite';
 import { Geist } from 'next/font/google';
 import Head from 'next/head';
+import { useState } from 'react';
 
 import styles from './Home.module.css';
 
@@ -13,8 +16,9 @@ const geist = Geist({
   subsets: ['latin'],
 });
 
-export default observer(function Home() {
+export default observer(() => {
   const { todoService } = useRoot();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   return (
     <>
@@ -26,27 +30,33 @@ export default observer(function Home() {
       </Head>
       <div className={`${styles.page} ${geist.className}`}>
         <main className={styles.main}>
-          <h1>Todo List</h1>
-
+          <div className={styles.header}>
+            <h1>Todo List</h1>
+            <CreateTodoButton onClick={() => setIsCreateModalOpen(true)} />
+          </div>
           <div className={styles.controls}>
             <TodoSearch />
 
             <TodoTabs
-              todos={todoService.todos}
-              filter={todoService.filter}
+              todos={todoService.todoState.data}
+              filter={todoService.searchState.filter}
               onFilterChange={todoService.setFilter}
             />
           </div>
 
           {/* Пример "глупого компонента". Получает данные через пропсы. Легко переиспользовать. Располагается в папке shared */}
           <TodoList
-            todos={todoService.filteredTodos}
-            isLoading={todoService.isTodosLoading}
+            todos={todoService.todoState.filtered}
+            isLoading={todoService.todoState.isLoading}
             onTodoClick={todoService.setSelectedTodoId}
           />
 
           {/* Пример "умного компонента". Содержит логику и взаимодействие с сервисом. Располагается в папке components */}
           <TodoModal />
+
+          {isCreateModalOpen && (
+            <CreateTodoModal onClose={() => setIsCreateModalOpen(false)} />
+          )}
         </main>
       </div>
     </>

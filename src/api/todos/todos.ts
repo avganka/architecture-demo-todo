@@ -20,8 +20,8 @@ export const todosApi = {
     });
   },
 
-  updateTodo: async (id: number, todo: Partial<TodoDto>): Promise<TodoDto> => {
-    return await apiInstance<TodoDto>(`/todos/${id}`, {
+  updateTodo: async (todo: Partial<TodoDto>): Promise<TodoDto> => {
+    return await apiInstance<TodoDto>(`/todos/${todo.id}`, {
       method: 'PATCH',
       json: todo,
     });
