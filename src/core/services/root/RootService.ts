@@ -3,15 +3,14 @@ import { TodoServiceImpl } from '../todo/TodoServiceImpl';
 import { AppStartup } from './AppStartup';
 
 export class RootService implements ServiceRegistry, AppStartup {
-  readonly todoService: TodoService = new TodoServiceImpl(this);
+  readonly todoService: TodoService = new TodoServiceImpl();
 
   constructor() {
     this.init();
   }
 
-  init() {
-    this.todoService.init();
-  }
+  // Методы, которые нужно вызвать при инициализации приложения
+  init() {}
 }
 
 export type ServiceRegistry = InstanceType<typeof RootService>;

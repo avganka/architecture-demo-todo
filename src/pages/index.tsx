@@ -1,12 +1,11 @@
-import { TodoList } from '@/components/TodoList/TodoList';
-import { TodoModal } from '@/components/TodoModal/TodoModal';
-import { TodoSearch } from '@/components/TodoSearch/TodoSearch';
-import { TodoTabs } from '@/components/TodoTabs/TodoTabs';
+import { TodoList } from '@/shared/components/TodoList/TodoList';
+import { TodoModal } from '@/modules/TodoModal/TodoModal';
+import { TodoSearch } from '@/modules/TodoSearch/TodoSearch';
+import { TodoTabs } from '@/modules/TodoTabs/TodoTabs';
 import { useRoot } from '@/shared/context/root';
 import { observer } from 'mobx-react-lite';
 import { Geist } from 'next/font/google';
 import Head from 'next/head';
-import { useState } from 'react';
 
 import styles from './Home.module.css';
 
@@ -16,8 +15,6 @@ const geist = Geist({
 
 export default observer(function Home() {
   const { todoService } = useRoot();
-
-  const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
 
   return (
     <>
@@ -33,22 +30,23 @@ export default observer(function Home() {
 
           <div className={styles.controls}>
             <TodoSearch />
+
             <TodoTabs
               todos={todoService.todos}
               filter={todoService.filter}
               onFilterChange={todoService.setFilter}
             />
           </div>
+
+          {/* Пример "глупого компонента". Получает данные через пропсы. Легко переиспользовать. Располагается в папке shared */}
           <TodoList
             todos={todoService.filteredTodos}
-            isLoading={todoService.todosIsLoading}
-            onTodoClick={setSelectedTodoId}
+            isLoading={todoService.isTodosLoading}
+            onTodoClick={todoService.setSelectedTodoId}
           />
 
-          <TodoModal
-            todoId={selectedTodoId}
-            onClose={() => setSelectedTodoId(null)}
-          />
+          {/* Пример "умного компонента". Содержит логику и взаимодействие с сервисом. Располагается в папке components */}
+          <TodoModal />
         </main>
       </div>
     </>

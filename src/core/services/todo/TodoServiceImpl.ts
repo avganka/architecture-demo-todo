@@ -1,125 +1,62 @@
 import { todosApi } from '@/api/todos/todos';
-import { TodoDto } from '@/api/todos/todos.dto';
 import { makeAutoObservable } from 'mobx';
 
-import { ServiceRegistry } from '../root/RootService';
+import { StateQueryManager } from '../state-query-manager/StateQueryManager';
 import { TodoService } from './TodoService';
 import { TodoFilter } from './TodoService';
 
 export class TodoServiceImpl implements TodoService {
-  todos: TodoDto[] = [];
-  selectedTodo: TodoDto | null = null;
-  todosIsLoading = false;
-  detailsIsLoading = false;
-  searchQuery = '';
-  filter: TodoFilter = 'all';
+  private _selectedTodoId: number | null = null;
+  private _searchQuery = '';
+  private _filter: TodoFilter = 'all';
 
-  // private _searchResult = new MobxQueryImpl(() => ({
-  //   queryKey: ["search"],
-  //   queryFn: async () =>
-  //     await fetch(
-  //       `https://jsonplaceholder.typicode.com/posts/?userId=${1}`
-  //     ).then((response) => response.json() as Promise<User[]>),
-  // }));
+  private _todosState = new StateQueryManager(() => ({
+    queryKey: ['todos', this._searchQuery],
+    queryFn: async (meta) =>
+      await todosApi.getTodos(this._searchQuery, meta.signal),
+    staleTime: 1000,
+  }));
 
-  constructor(private readonly _root: ServiceRegistry) {
+  private _selectedTodoState = new StateQueryManager(() => ({
+    queryKey: ['todos', this._selectedTodoId],
+    queryFn: async (meta) => {
+      if (!this._selectedTodoId) return null;
+      return await todosApi.getTodoById(this._selectedTodoId, meta.signal);
+    },
+    enabled: !!this._selectedTodoId,
+    staleTime: 1000,
+  }));
+
+  constructor() {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
-  // get searchResult() {
-  //   return this._searchResult.results?.data ?? [];
-  // }
-
-  // async search(query: string) {
-  //   this._searchResult.init();
-  //   console.log(this._searchResult.results);
-  //   const client = new MobxQueryImpl(() => ({
-  //     queryKey: ['search', query],
-  //     queryFn: async () =>
-  //       await fetch(
-  //         `https://jsonplaceholder.typicode.com/posts/?userId=${query}`,
-  //       ).then((response) => response.json() as Promise<User[]>),
-  //   }));
-
-  //   const results = await client.fetch();
-
-  //   const results = await client.getResult();
-  //     queryKey: ['search', query],
-  //     queryFn: () =>
-  //       fetch(
-  //         `https://jsonplaceholder.typicode.com/posts/?userId=${query}`,
-  //       ).then((response) => response.json() as Promise<User[]>),
-  //   }));
-
-  //   console.log({ results });
-
-  //   runInAction(() => {
-  //     this._searchResult = results.data ?? [];
-  //   });
-  // }
-
-  init() {
-    this.getTodos();
+  get searchQuery() {
+    return this._searchQuery;
   }
 
-  setSearchQuery(query: string) {
-    this.searchQuery = query;
-    if (query) {
-      this.searchTodos(query);
-    } else {
-      this.getTodos();
-    }
+  get filter() {
+    return this._filter;
   }
 
-  async searchTodos(query: string): Promise<TodoDto[]> {
-    this.todosIsLoading = true;
-    try {
-      this.todos = await todosApi.searchTodos(query);
-      return this.todos;
-    } finally {
-      this.todosIsLoading = false;
-    }
+  get todos() {
+    return this._todosState.results.data ?? [];
   }
 
-  async createTodo(todo: Omit<TodoDto, 'id'>): Promise<TodoDto> {
-    return await todosApi.createTodo(todo);
+  get isTodosLoading() {
+    return this._todosState.results.isPending;
   }
 
-  async getTodos(): Promise<TodoDto[]> {
-    this.todosIsLoading = true;
-    try {
-      this.todos = await todosApi.getTodos();
-      return this.todos;
-    } finally {
-      this.todosIsLoading = false;
-    }
+  get selectedTodo() {
+    return this._selectedTodoState.results.data ?? null;
   }
 
-  async getTodoById(id: number): Promise<TodoDto | null> {
-    this.detailsIsLoading = true;
-    try {
-      this.selectedTodo = await todosApi.getTodoById(id);
-      return this.selectedTodo ?? null;
-    } finally {
-      this.detailsIsLoading = false;
-    }
+  get selectedTodoId() {
+    return this._selectedTodoId;
   }
 
-  async updateTodo(id: number, todo: Partial<TodoDto>): Promise<TodoDto> {
-    const updatedTodo = await todosApi.updateTodo(id, todo);
-    this.todos = this.todos.map((t) => (t.id === id ? updatedTodo : t));
-    if (this.selectedTodo?.id === id) {
-      this.selectedTodo = updatedTodo;
-    }
-    return updatedTodo;
-  }
-
-  async deleteTodo(id: number): Promise<void> {
-    await todosApi.deleteTodo(id);
-    this.todos = this.todos.filter((t) => t.id !== id);
-    if (this.selectedTodo?.id === id) {
-      this.selectedTodo = null;
-    }
+  get isSelectedTodoLoading() {
+    return this._selectedTodoState.results.isPending;
   }
 
   get filteredTodos() {
@@ -133,8 +70,15 @@ export class TodoServiceImpl implements TodoService {
     }
   }
 
+  setSelectedTodoId(id: number | null) {
+    this._selectedTodoId = id;
+  }
+
   setFilter(filter: TodoFilter) {
-    console.log({ filter, aa: this.filter });
-    this.filter = filter;
+    this._filter = filter;
+  }
+
+  setSearchQuery(query: string) {
+    this._searchQuery = query;
   }
 }

@@ -1,25 +1,17 @@
 import { useRoot } from '@/shared/context/root';
 import { observer } from 'mobx-react-lite';
-import { useEffect } from 'react';
 
 import styles from './TodoModal.module.css';
 import { TodoSkeleton } from './TodoSkeleton';
 
-interface TodoModalProps {
-  todoId: number | null;
-  onClose: () => void;
-}
-
-export const TodoModal = observer(({ todoId, onClose }: TodoModalProps) => {
+export const TodoModal = observer(() => {
   const { todoService } = useRoot();
 
-  useEffect(() => {
-    if (todoId) {
-      todoService.getTodoById(todoId);
-    }
-  }, [todoId, todoService]);
+  const onClose = () => {
+    todoService.setSelectedTodoId(null);
+  };
 
-  if (!todoId) return null;
+  if (!todoService.selectedTodoId) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -28,7 +20,7 @@ export const TodoModal = observer(({ todoId, onClose }: TodoModalProps) => {
           ×
         </button>
 
-        {todoService.detailsIsLoading ? (
+        {todoService.isSelectedTodoLoading ? (
           <TodoSkeleton />
         ) : todoService.selectedTodo ? (
           <>
@@ -39,21 +31,21 @@ export const TodoModal = observer(({ todoId, onClose }: TodoModalProps) => {
                 <input
                   type="checkbox"
                   checked={todoService.selectedTodo.completed}
-                  onChange={() =>
-                    todoService.updateTodo(todoService.selectedTodo!.id, {
-                      completed: !todoService.selectedTodo!.completed,
-                    })
-                  }
+                  // onChange={() =>
+                  //   todoService.updateTodo(todoService.selectedTodo!.id, {
+                  //     completed: !todoService.selectedTodo!.completed,
+                  //   })
+                  // }
                 />
                 Status:{' '}
                 {todoService.selectedTodo.completed ? 'Completed' : 'Pending'}
               </label>
               <button
                 className={styles.deleteButton}
-                onClick={async () => {
-                  await todoService.deleteTodo(todoService.selectedTodo!.id);
-                  onClose();
-                }}
+                // onClick={async () => {
+                //   await todoService.deleteTodo(todoService.selectedTodo!.id);
+                //   onClose();
+                // }}
               >
                 Delete Todo
               </button>

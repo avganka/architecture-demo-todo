@@ -11,6 +11,7 @@ type TodoListProps = {
 
 export const TodoList = observer((props: TodoListProps) => {
   const { todos, isLoading, onTodoClick } = props;
+
   if (isLoading) {
     return <p>Loading...</p>;
   }

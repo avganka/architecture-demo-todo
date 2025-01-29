@@ -6,7 +6,7 @@ class ApiError extends Error {
 
 const BASE_URL = 'http://localhost:3001';
 
-export const jsonApiInstance = async <T>(
+export const apiInstance = async <T>(
   url: string,
   init?: RequestInit & { json?: unknown },
 ) => {
