@@ -4,6 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 1;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
@@ -51,13 +52,13 @@
   cursor: pointer;
 }
 
-.actions button[type="submit"] {
-  background: #4CAF50;
+.actions button[type='submit'] {
+  background: #4caf50;
   color: white;
   border: none;
 }
 
-.actions button[type="button"] {
+.actions button[type='button'] {
   background: none;
   border: 1px solid #ddd;
-} 
+}

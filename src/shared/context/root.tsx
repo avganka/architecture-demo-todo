@@ -19,7 +19,6 @@ export const useRoot = () => {
 export const RootProvider = (props: RootProviderProps) => {
   const { children, rootService } = props;
 
-  // useEffect(() => rootService?.subscribe(), [rootService]);
   return rootService ? (
     <RootContext.Provider value={rootService}>{children}</RootContext.Provider>
   ) : null;

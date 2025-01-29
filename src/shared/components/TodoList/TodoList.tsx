@@ -1,4 +1,5 @@
 import { TodoDto } from '@/api/todos/todos.dto';
+import { TodoSkeleton } from '@/shared/components/skeletons/TodoSkeleton/TodoSkeleton';
 import { observer } from 'mobx-react-lite';
 
 import styles from './TodoList.module.css';
@@ -13,7 +14,7 @@ export const TodoList = observer((props: TodoListProps) => {
   const { todos, isLoading, onTodoClick } = props;
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <TodoSkeleton />;
   }
 
   if (todos.length === 0) {

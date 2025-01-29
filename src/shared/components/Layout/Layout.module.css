@@ -1,0 +1,9 @@
+.page {
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.main {
+  max-width: 800px;
+  margin: 0 auto;
+} 

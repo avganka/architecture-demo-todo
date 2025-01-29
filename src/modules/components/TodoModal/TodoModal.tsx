@@ -1,8 +1,8 @@
+import { TodoModalSkeleton } from '@/shared/components/skeletons/TodoModalSkeleton/TodoModalSkeleton';
 import { useRoot } from '@/shared/context/root';
 import { observer } from 'mobx-react-lite';
 
 import styles from './TodoModal.module.css';
-import { TodoSkeleton } from './TodoSkeleton';
 
 export const TodoModal = observer(() => {
   const { todoService } = useRoot();
@@ -39,7 +39,7 @@ export const TodoModal = observer(() => {
         </button>
 
         {todoService.selectedTodoState.isLoading ? (
-          <TodoSkeleton />
+          <TodoModalSkeleton />
         ) : todoService.selectedTodoState.data ? (
           <>
             <h2>Todo #{todoService.selectedTodoState.data.id}</h2>

@@ -1,6 +1,6 @@
-import styles from './TodoSkeleton.module.css';
+import styles from './TodoModalSkeleton.module.css';
 
-export const TodoSkeleton = () => {
+export const TodoModalSkeleton = () => {
   return (
     <div className={styles.skeleton}>
       <div className={styles.header}>
