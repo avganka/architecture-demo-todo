@@ -23,7 +23,7 @@ export class TodoServiceImpl implements TodoService {
   // }));
 
   constructor(private readonly _root: ServiceRegistry) {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {}, { autoBind: true });
   }
 
   // get searchResult() {
@@ -134,6 +134,7 @@ export class TodoServiceImpl implements TodoService {
   }
 
   setFilter(filter: TodoFilter) {
+    console.log({ filter, aa: this.filter });
     this.filter = filter;
   }
 }

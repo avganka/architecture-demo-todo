@@ -1,22 +1,27 @@
-import { useRoot } from '@/shared/context/root';
+import { TodoDto } from '@/api/todos/todos.dto';
 import { observer } from 'mobx-react-lite';
 
 import styles from './TodoList.module.css';
 
-interface TodoListProps {
+type TodoListProps = {
+  todos: TodoDto[];
+  isLoading: boolean;
   onTodoClick: (id: number) => void;
-}
+};
 
-export const TodoList = observer(({ onTodoClick }: TodoListProps) => {
-  const { todoService } = useRoot();
-
-  if (todoService.todosIsLoading) {
+export const TodoList = observer((props: TodoListProps) => {
+  const { todos, isLoading, onTodoClick } = props;
+  if (isLoading) {
     return <p>Loading...</p>;
+  }
+
+  if (todos.length === 0) {
+    return <p>No todos found</p>;
   }
 
   return (
     <ul className={styles.todoList}>
-      {todoService.filteredTodos.map((todo) => (
+      {todos.map((todo) => (
         <li
           key={todo.id}
           className={`${styles.todoItem} ${

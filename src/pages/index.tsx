@@ -2,6 +2,8 @@ import { TodoList } from '@/components/TodoList/TodoList';
 import { TodoModal } from '@/components/TodoModal/TodoModal';
 import { TodoSearch } from '@/components/TodoSearch/TodoSearch';
 import { TodoTabs } from '@/components/TodoTabs/TodoTabs';
+import { useRoot } from '@/shared/context/root';
+import { observer } from 'mobx-react-lite';
 import { Geist } from 'next/font/google';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -12,7 +14,9 @@ const geist = Geist({
   subsets: ['latin'],
 });
 
-export default function Home() {
+export default observer(function Home() {
+  const { todoService } = useRoot();
+
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
 
   return (
@@ -29,9 +33,17 @@ export default function Home() {
 
           <div className={styles.controls}>
             <TodoSearch />
-            <TodoTabs />
+            <TodoTabs
+              todos={todoService.todos}
+              filter={todoService.filter}
+              onFilterChange={todoService.setFilter}
+            />
           </div>
-          <TodoList onTodoClick={setSelectedTodoId} />
+          <TodoList
+            todos={todoService.filteredTodos}
+            isLoading={todoService.todosIsLoading}
+            onTodoClick={setSelectedTodoId}
+          />
 
           <TodoModal
             todoId={selectedTodoId}
@@ -41,4 +53,4 @@ export default function Home() {
       </div>
     </>
   );
-}
+});
