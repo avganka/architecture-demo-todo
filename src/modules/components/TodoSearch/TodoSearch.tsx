@@ -30,7 +30,7 @@ export const TodoSearch = observer(() => {
           className={styles.clear}
           onClick={() => {
             todoService.setSearchQuery('');
-            const input = document.querySelector('input') as HTMLInputElement;
+            const input = document.querySelector('input');
             if (input) input.value = '';
             debouncedSearch.cancel();
           }}

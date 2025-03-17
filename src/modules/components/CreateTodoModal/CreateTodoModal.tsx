@@ -13,13 +13,24 @@ export const CreateTodoModal = observer(
       e.preventDefault();
       if (!title.trim()) return;
 
-      todoService.createTodo({ title, completed: false });
-      onClose();
+      todoService
+        .createTodo({ title, completed: false })
+        .then(() => {
+          onClose();
+        })
+        .catch((error: unknown) => {
+          console.error(error);
+        });
     };
 
     return (
       <div className={styles.overlay} onClick={onClose}>
-        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={styles.modal}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <button className={styles.closeButton} onClick={onClose}>
             ×
           </button>
@@ -28,10 +39,11 @@ export const CreateTodoModal = observer(
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
               placeholder="What needs to be done?"
               className={styles.input}
-              autoFocus
             />
             <div className={styles.actions}>
               <button type="button" onClick={onClose}>

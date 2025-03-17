@@ -3,86 +3,108 @@
     {
       "id": "1",
       "title": "Learn React",
-      "completed": false,
-      "userId": 1
+      "completed": true,
+      "categoryId": 1
     },
     {
       "id": "3",
       "title": "Build a Todo App",
-      "completed": false,
-      "userId": 1
+      "completed": true,
+      "categoryId": 1
     },
     {
       "id": "4",
       "title": "Master Next.js",
-      "completed": false,
-      "userId": 1
+      "completed": true,
+      "categoryId": 1
     },
     {
       "id": "5",
       "title": "Study GraphQL",
       "completed": true,
-      "userId": 1
+      "categoryId": 2
     },
     {
       "id": "6",
       "title": "Practice TDD",
       "completed": true,
-      "userId": 1
+      "categoryId": 2
     },
     {
       "id": "7",
       "title": "Learn Docker",
-      "completed": false,
-      "userId": 1
+      "completed": true,
+      "categoryId": 3
     },
     {
       "id": "8",
       "title": "Explore Microservices",
       "completed": false,
-      "userId": 2
+      "categoryId": 3
     },
     {
       "id": "9",
       "title": "Study System Design",
       "completed": true,
-      "userId": 2
+      "categoryId": 2
     },
     {
       "id": "10",
       "title": "Learn AWS",
       "completed": false,
-      "userId": 2
+      "categoryId": 3
     },
     {
       "id": "11",
       "title": "Master Git",
       "completed": true,
-      "userId": 2
+      "categoryId": 1
     },
     {
       "id": "12",
       "title": "Practice Algorithms",
       "completed": false,
-      "userId": 2
+      "categoryId": 3
     },
     {
       "id": "13",
       "title": "Study Design Patterns",
       "completed": false,
-      "userId": 3
+      "categoryId": 3
     },
     {
       "id": "14",
       "title": "Learn Python",
       "completed": true,
-      "userId": 3
+      "categoryId": 3
     },
     {
       "id": "15",
       "title": "Explore Machine Learning",
       "completed": false,
-      "userId": 3
+      "categoryId": 4
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Frontend",
+      "description": "Frontend development is the process of building the user interface of a website or application. It involves creating the visual elements that users see and interact with, such as buttons, forms, and navigation menus."
+    },
+    {
+      "id": 2,
+      "name": "Backend",
+      "description": "Backend development is the process of building the server-side of a website or application. It involves creating the logic that runs on the server, such as APIs and database interactions."
+    },
+    {
+      "id": 3,
+      "name": "Devops",
+      "description": "DevOps is a practice that combines software development and operations to improve the speed and quality of software delivery."
+    },
+    {
+      "id": 4,
+      "name": "QA",
+      "description": "QA is a practice that combines software development and operations to improve the speed and quality of software delivery."
     }
   ]
 }

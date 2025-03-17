@@ -8,10 +8,21 @@ export const CreateTodoButton = () => {
 
   return (
     <>
-      <button className={styles.button} onClick={() => setIsModalOpen(true)}>
+      <button
+        className={styles.button}
+        onClick={() => {
+          setIsModalOpen(true);
+        }}
+      >
         +
       </button>
-      {isModalOpen && <CreateTodoModal onClose={() => setIsModalOpen(false)} />}
+      {isModalOpen && (
+        <CreateTodoModal
+          onClose={() => {
+            setIsModalOpen(false);
+          }}
+        />
+      )}
     </>
   );
 };

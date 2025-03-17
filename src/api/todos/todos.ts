@@ -1,5 +1,5 @@
 import { apiInstance } from '../api-instance';
-import { TodoDto } from './todos.dto';
+import type { TodoDto } from './todos.dto';
 
 export const todosApi = {
   getTodos: async (query: string, signal?: AbortSignal): Promise<TodoDto[]> => {
@@ -10,7 +10,7 @@ export const todosApi = {
   },
 
   getTodoById: async (id: number, signal?: AbortSignal): Promise<TodoDto> => {
-    return await apiInstance<TodoDto>(`/todos/${id}`, { signal });
+    return await apiInstance<TodoDto>(`/todos/${id.toString()}`, { signal });
   },
 
   createTodo: async (todo: Omit<TodoDto, 'id'>): Promise<TodoDto> => {
@@ -20,15 +20,17 @@ export const todosApi = {
     });
   },
 
-  updateTodo: async (todo: Partial<TodoDto>): Promise<TodoDto> => {
-    return await apiInstance<TodoDto>(`/todos/${todo.id}`, {
+  updateTodo: async (
+    todo: Partial<TodoDto> & { id: number },
+  ): Promise<TodoDto> => {
+    return await apiInstance<TodoDto>(`/todos/${todo.id.toString()}`, {
       method: 'PATCH',
       json: todo,
     });
   },
 
   deleteTodo: async (id: number): Promise<void> => {
-    await apiInstance<void>(`/todos/${id}`, {
+    await apiInstance(`/todos/${id.toString()}`, {
       method: 'DELETE',
     });
   },

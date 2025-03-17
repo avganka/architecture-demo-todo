@@ -1,6 +1,6 @@
 class ApiError extends Error {
   constructor(public response: Response) {
-    super('ApiError:' + response.status);
+    super(`ApiError: ${response.status.toString()}`);
   }
 }
 

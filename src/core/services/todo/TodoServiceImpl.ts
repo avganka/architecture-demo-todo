@@ -1,11 +1,11 @@
 import { todosApi } from '@/api/todos/todos';
-import { TodoDto } from '@/api/todos/todos.dto';
+import type { TodoDto } from '@/api/todos/todos.dto';
 import { makeAutoObservable } from 'mobx';
 
+import type { CategoryService } from '../categories/CategoryService';
 import { MutationManager } from '../state-query-manager/MutationManager';
 import { QueryManager } from '../state-query-manager/QueryManager';
-import { TodoService } from './TodoService';
-import { TodoFilter } from './TodoService';
+import type { TodoFilter, TodoService } from './TodoService';
 
 export class TodoServiceImpl implements TodoService {
   private _filter: TodoFilter = 'all';
@@ -13,10 +13,10 @@ export class TodoServiceImpl implements TodoService {
   private _selectedTodoId: number | null = null;
 
   private _todosQuery = new QueryManager(() => ({
-    queryKey: ['todos', this._searchQuery],
+    queryKey: ['todos', 'list', this._searchQuery],
     queryFn: async (meta) =>
       await todosApi.getTodos(this._searchQuery, meta.signal),
-    staleTime: 1000,
+    staleTime: this._getStaleTime(),
   }));
 
   private _selectedTodoQuery = new QueryManager(() => ({
@@ -31,25 +31,25 @@ export class TodoServiceImpl implements TodoService {
 
   private _createTodoMutation = new MutationManager(() => ({
     mutationFn: async (todo: Pick<TodoDto, 'title' | 'completed'>) => {
-      return await todosApi.createTodo({ ...todo, userId: 1 });
+      return await todosApi.createTodo({ ...todo, categoryId: 1 });
     },
-    onSuccess: () => {
-      this._todosQuery.fetch();
+    onSuccess: async () => {
+      await this._todosQuery.fetch();
     },
   }));
 
   private _updateTodoMutation = new MutationManager(() => ({
-    mutationFn: async (todo: Partial<TodoDto>) => {
+    mutationFn: async (todo: Partial<TodoDto> & { id: number }) => {
       return await todosApi.updateTodo(todo);
     },
     /**
      *  Пример оптимистичного обновления
      *  https://tanstack.com/query/latest/docs/framework/react/guides/optimistic-updates
      */
-    onMutate: (newTodo) => {
+    onMutate: async (newTodo) => {
       // Отменяем текущие запросы, чтобы они не перезаписали оптимистичное обновление
-      this._todosQuery.cancelQuery();
-      this._selectedTodoQuery.cancelQuery();
+      await this._todosQuery.cancelQuery();
+      await this._selectedTodoQuery.cancelQuery();
 
       // Сохраняем предыдущее состояние
       const previousTodos = this._todosQuery.results.data;
@@ -80,24 +80,28 @@ export class TodoServiceImpl implements TodoService {
         this._selectedTodoQuery.setData(context.previousSelectedTodo);
       }
     },
-    onSettled: () => {
+    onSettled: async () => {
       // После завершения (успех/ошибка) обновляем данные с сервера
-      this._todosQuery.fetch();
-      this._selectedTodoQuery.fetch();
+      await this._todosQuery.fetch();
+      await this._selectedTodoQuery.fetch();
     },
   }));
 
   private _deleteTodoMutation = new MutationManager(() => ({
     mutationFn: async (todoId: number) => {
-      return await todosApi.deleteTodo(todoId);
+      await todosApi.deleteTodo(todoId);
     },
     // Пример обновления данных после завершения мутации
-    onSuccess: () => {
-      this._todosQuery.fetch();
+    onSuccess: async () => {
+      await this._todosQuery.fetch();
     },
   }));
 
-  constructor() {
+  constructor(
+    private readonly _root: {
+      categoryService: CategoryService;
+    },
+  ) {
     makeAutoObservable(this, {}, { autoBind: true });
   }
 
@@ -106,6 +110,10 @@ export class TodoServiceImpl implements TodoService {
       data: this._todosQuery.results.data ?? [],
       isLoading: this._todosQuery.results.isPending,
       filtered: this._getFilteredTodos(this._todosQuery.results.data ?? []),
+      filteredByUser: this._getFilteredTodosByUser(
+        this._todosQuery.results.data ?? [],
+        this._root.categoryService.category?.id ?? 0,
+      ),
     };
   }
 
@@ -136,16 +144,16 @@ export class TodoServiceImpl implements TodoService {
     this._searchQuery = query;
   }
 
-  createTodo(todo: Pick<TodoDto, 'title' | 'completed'>) {
-    this._createTodoMutation.mutate(todo);
+  async createTodo(todo: Pick<TodoDto, 'title' | 'completed'>): Promise<void> {
+    await this._createTodoMutation.mutate(todo);
   }
 
-  updateTodo(todo: Partial<TodoDto>) {
-    this._updateTodoMutation.mutate(todo);
+  async updateTodo(todo: Partial<TodoDto> & { id: number }): Promise<void> {
+    await this._updateTodoMutation.mutate(todo);
   }
 
-  deleteTodo(todoId: number) {
-    this._deleteTodoMutation.mutate(todoId);
+  async deleteTodo(todoId: number): Promise<void> {
+    await this._deleteTodoMutation.mutate(todoId);
   }
 
   private _getFilteredTodos(todos: TodoDto[]) {
@@ -157,5 +165,13 @@ export class TodoServiceImpl implements TodoService {
       default:
         return todos;
     }
+  }
+
+  private _getFilteredTodosByUser(todos: TodoDto[], categoryId: number) {
+    return todos.filter((todo) => todo.categoryId === categoryId);
+  }
+
+  private _getStaleTime() {
+    return this._searchQuery ? 1000 : 0;
   }
 }

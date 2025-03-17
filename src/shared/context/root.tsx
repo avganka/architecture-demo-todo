@@ -1,10 +1,10 @@
-import { ServiceRegistry } from '@/core/services/root/RootService';
+import type { ServiceRegistry } from '@/core/services/root/RootService';
 import { createContext, useContext } from 'react';
 
-export type RootProviderProps = {
+export interface RootProviderProps {
   children?: React.ReactNode;
   rootService: ServiceRegistry;
-};
+}
 
 const RootContext = createContext<ServiceRegistry | undefined>(undefined);
 
@@ -19,7 +19,7 @@ export const useRoot = () => {
 export const RootProvider = (props: RootProviderProps) => {
   const { children, rootService } = props;
 
-  return rootService ? (
+  return (
     <RootContext.Provider value={rootService}>{children}</RootContext.Provider>
-  ) : null;
+  );
 };

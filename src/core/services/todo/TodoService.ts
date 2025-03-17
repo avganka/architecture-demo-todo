@@ -1,4 +1,4 @@
-import { TodoDto } from '@/api/todos/todos.dto';
+import type { TodoDto } from '@/api/todos/todos.dto';
 
 export type TodoFilter = 'all' | 'completed' | 'active';
 
@@ -6,6 +6,7 @@ export interface TodoState {
   data: TodoDto[];
   isLoading: boolean;
   filtered: TodoDto[];
+  filteredByUser: TodoDto[];
 }
 
 export interface DetailTodoState {
@@ -28,7 +29,7 @@ export interface TodoService {
   setSearchQuery: (query: string) => void;
   setFilter: (filter: TodoFilter) => void;
 
-  updateTodo: (todo: Partial<TodoDto>) => void;
-  deleteTodo: (todoId: number) => void;
-  createTodo: (todo: Pick<TodoDto, 'title' | 'completed'>) => void;
+  updateTodo: (todo: Partial<TodoDto> & { id: number }) => Promise<void>;
+  deleteTodo: (todoId: number) => Promise<void>;
+  createTodo: (todo: Pick<TodoDto, 'title' | 'completed'>) => Promise<void>;
 }

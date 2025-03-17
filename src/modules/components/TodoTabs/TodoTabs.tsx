@@ -1,5 +1,5 @@
-import { TodoDto } from '@/api/todos/todos.dto';
-import { TodoFilter } from '@/core/services/todo/TodoService';
+import type { TodoDto } from '@/api/todos/todos.dto';
+import type { TodoFilter } from '@/core/services/todo/TodoService';
 
 import styles from './TodoTabs.module.css';
 
@@ -9,11 +9,11 @@ const tabs: { value: TodoFilter; label: string }[] = [
   { value: 'completed', label: 'Completed' },
 ];
 
-type TodoTabsProps = {
+interface TodoTabsProps {
   todos: TodoDto[];
   filter: TodoFilter;
   onFilterChange: (filter: TodoFilter) => void;
-};
+}
 
 export const TodoTabs = (props: TodoTabsProps) => {
   const { todos, filter, onFilterChange } = props;
@@ -24,7 +24,9 @@ export const TodoTabs = (props: TodoTabsProps) => {
         <button
           key={value}
           className={`${styles.tab} ${filter === value ? styles.active : ''}`}
-          onClick={() => onFilterChange(value)}
+          onClick={() => {
+            onFilterChange(value);
+          }}
         >
           {label}
           <span className={styles.count}>

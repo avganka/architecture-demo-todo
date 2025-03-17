@@ -19,21 +19,30 @@ export const TodoModal = observer(() => {
       completed: !todoService.selectedTodoState.data.completed,
     };
 
-    todoService.updateTodo(updatedTodo);
+    todoService.updateTodo(updatedTodo).catch(console.error);
   };
 
   const handleDeleteTodo = () => {
     if (!todoService.selectedTodoState.data) return;
 
-    todoService.deleteTodo(todoService.selectedTodoState.data.id);
-    onClose();
+    todoService
+      .deleteTodo(todoService.selectedTodoState.data.id)
+      .then(() => {
+        onClose();
+      })
+      .catch(console.error);
   };
 
   if (!todoService.selectedTodoState.id) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modal}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
         <button className={styles.closeButton} onClick={onClose}>
           ×
         </button>

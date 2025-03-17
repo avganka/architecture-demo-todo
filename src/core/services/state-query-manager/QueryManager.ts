@@ -28,10 +28,14 @@ export class QueryManager<
     'QueryManager',
     // 2nd (optional) parameter:
     // - Callback for when this atom transitions from unobserved to observed.
-    () => this._startTicking(),
+    () => {
+      this._startTicking();
+    },
     // 3rd (optional) parameter:
     // - Callback for when this atom transitions from observed to unobserved.
-    () => this._stopTicking(),
+    () => {
+      this._stopTicking();
+    },
     // The same atom transitions between these two states multiple times.
   );
 
@@ -59,17 +63,19 @@ export class QueryManager<
   get results() {
     this._atom.reportObserved();
     this._queryObserver.setOptions(this._getDefaultOptions);
-    return this._queryObserver?.getOptimisticResult(this._getDefaultOptions);
+    return this._queryObserver.getOptimisticResult(this._getDefaultOptions);
   }
 
   /** Принудительно запрашивает свежие данные с сервера */
   fetch() {
-    return this._queryObserver?.fetchOptimistic(this._getDefaultOptions);
+    return this._queryObserver.fetchOptimistic(this._getDefaultOptions);
   }
 
   /** Отменяет текущие запросы с этим queryKey. Нужен для оптимистического обновления данных */
-  cancelQuery() {
-    this._queryClient.cancelQueries({ queryKey: this._getOptions().queryKey });
+  async cancelQuery() {
+    await this._queryClient.cancelQueries({
+      queryKey: this._getOptions().queryKey,
+    });
   }
 
   /** Вручную обновляет данные в кеше без запроса к серверу. Используется для оптимистического обновления данных */
@@ -105,5 +111,7 @@ export class QueryManager<
     this._unsubscribe();
   }
 
-  private _unsubscribe() {}
+  private _unsubscribe() {
+    return;
+  }
 }

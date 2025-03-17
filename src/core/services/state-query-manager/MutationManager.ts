@@ -1,9 +1,9 @@
 import { queryClient } from '@/core/store/query-client';
-import {
+import type {
   DefaultError,
-  MutationObserver,
   MutationObserverOptions,
 } from '@tanstack/query-core';
+import { MutationObserver } from '@tanstack/query-core';
 import { makeAutoObservable } from 'mobx';
 
 /**
@@ -31,7 +31,10 @@ export class MutationManager<
       TContext
     >,
   ) {
-    this._mutationObserver = new MutationObserver(queryClient, this._getOptions());
+    this._mutationObserver = new MutationObserver(
+      queryClient,
+      this._getOptions(),
+    );
     makeAutoObservable(this);
   }
 
@@ -44,6 +47,6 @@ export class MutationManager<
   }
   //   Запускает мутацию с переданными данными
   async mutate(variables: TVariables) {
-    return this._mutationObserver.mutate(variables);
+    return await this._mutationObserver.mutate(variables);
   }
 }

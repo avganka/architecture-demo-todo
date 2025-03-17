@@ -1,5 +1,4 @@
 import { CreateTodoButton } from '@/modules/components/CreateTodoButton/CreateTodoButton';
-import { TodoModal } from '@/modules/components/TodoModal/TodoModal';
 import { TodoSearch } from '@/modules/components/TodoSearch/TodoSearch';
 import { TodoTabs } from '@/modules/components/TodoTabs/TodoTabs';
 import { TodoList } from '@/shared/components/TodoList/TodoList';
@@ -9,7 +8,8 @@ import { observer } from 'mobx-react-lite';
 import styles from './MainContainer.module.css';
 
 export const MainContainer = observer(() => {
-  const { todoService } = useRoot();
+  const { todoService, categoryService } = useRoot();
+
   return (
     <>
       <div className={styles.header}>
@@ -18,6 +18,7 @@ export const MainContainer = observer(() => {
       </div>
 
       <div className={styles.controls}>
+        {/* Пример "умного компонента". Содержит логику и взаимодействие с сервисом. Располагается в папке modules */}
         <TodoSearch />
 
         <TodoTabs
@@ -30,12 +31,10 @@ export const MainContainer = observer(() => {
       {/* Пример "глупого компонента". Получает данные через пропсы. Легко переиспользовать. Располагается в папке shared */}
       <TodoList
         todos={todoService.todoState.filtered}
+        categories={categoryService.categories}
         isLoading={todoService.todoState.isLoading}
         onTodoClick={todoService.setSelectedTodoId}
       />
-
-      {/* Пример "умного компонента". Содержит логику и взаимодействие с сервисом. Располагается в папке modules */}
-      <TodoModal />
     </>
   );
 });
